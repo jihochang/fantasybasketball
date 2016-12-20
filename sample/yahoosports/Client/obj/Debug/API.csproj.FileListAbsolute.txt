@@ -1,0 +1,7 @@
+C:\Repos\fantasy\fantasybasketball\sample\yahoosports\Client\bin\Debug\YahooSports.Api.dll
+C:\Repos\fantasy\fantasybasketball\sample\yahoosports\Client\bin\Debug\YahooSports.Api.pdb
+C:\Repos\fantasy\fantasybasketball\sample\yahoosports\Client\bin\Debug\YahooSports.OAuthLib.dll
+C:\Repos\fantasy\fantasybasketball\sample\yahoosports\Client\bin\Debug\YahooSports.OAuthLib.pdb
+C:\Repos\fantasy\fantasybasketball\sample\yahoosports\Client\obj\Debug\API.csprojResolveAssemblyReference.cache
+C:\Repos\fantasy\fantasybasketball\sample\yahoosports\Client\obj\Debug\YahooSports.Api.dll
+C:\Repos\fantasy\fantasybasketball\sample\yahoosports\Client\obj\Debug\YahooSports.Api.pdb

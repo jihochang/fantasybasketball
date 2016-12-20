@@ -1,0 +1,5 @@
+C:\Repos\fantasy\fantasybasketball\sample\yahoosports\OAuthLib\bin\Debug\YahooSports.OAuthLib.dll
+C:\Repos\fantasy\fantasybasketball\sample\yahoosports\OAuthLib\bin\Debug\YahooSports.OAuthLib.pdb
+C:\Repos\fantasy\fantasybasketball\sample\yahoosports\OAuthLib\obj\x86\Debug\OAuthLib.csprojResolveAssemblyReference.cache
+C:\Repos\fantasy\fantasybasketball\sample\yahoosports\OAuthLib\obj\x86\Debug\YahooSports.OAuthLib.dll
+C:\Repos\fantasy\fantasybasketball\sample\yahoosports\OAuthLib\obj\x86\Debug\YahooSports.OAuthLib.pdb

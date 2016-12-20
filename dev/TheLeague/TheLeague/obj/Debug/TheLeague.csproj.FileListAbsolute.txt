@@ -1,0 +1,12 @@
+C:\Repos\fantasy\fantasybasketball\dev\TheLeague\TheLeague\bin\Debug\TheLeague.exe.config
+C:\Repos\fantasy\fantasybasketball\dev\TheLeague\TheLeague\bin\Debug\TheLeague.exe
+C:\Repos\fantasy\fantasybasketball\dev\TheLeague\TheLeague\bin\Debug\TheLeague.pdb
+C:\Repos\fantasy\fantasybasketball\dev\TheLeague\TheLeague\bin\Debug\Newtonsoft.Json.dll
+C:\Repos\fantasy\fantasybasketball\dev\TheLeague\TheLeague\bin\Debug\Newtonsoft.Json.xml
+C:\Repos\fantasy\fantasybasketball\dev\TheLeague\TheLeague\obj\Debug\TheLeague.exe
+C:\Repos\fantasy\fantasybasketball\dev\TheLeague\TheLeague\obj\Debug\TheLeague.pdb
+C:\Repos\fantasy\fantasybasketball\dev\TheLeague\TheLeague\obj\Debug\TheLeague.csprojResolveAssemblyReference.cache
+C:\Repos\fantasy\fantasybasketball\dev\TheLeague\TheLeague\bin\Debug\YahooSports.Api.dll
+C:\Repos\fantasy\fantasybasketball\dev\TheLeague\TheLeague\bin\Debug\YahooSports.OAuthLib.dll
+C:\Repos\fantasy\fantasybasketball\dev\TheLeague\TheLeague\bin\Debug\YahooSports.Api.pdb
+C:\Repos\fantasy\fantasybasketball\dev\TheLeague\TheLeague\bin\Debug\YahooSports.OAuthLib.pdb
