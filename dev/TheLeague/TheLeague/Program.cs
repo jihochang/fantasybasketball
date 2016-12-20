@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -25,35 +26,71 @@ namespace TheLeague
         private const string TOKEN_FILE = "token";
         private static AccessToken Token;
 
+        private static string CACHE_FILE = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\Temp\FantasyBasketball\leaguecache.txt";
+
         private static SportsProvider Client;
+
+        private const string LeagueId = "45575";
 
 
         public static void Main(string[] args)
         {
             SetupClient();
 
+            List<FantasyTeam> league = GetLeague(true);
+
+
+        }
+
+        private static List<FantasyTeam> GetLeague(bool useCache)
+        {
+            if (useCache)
+            {
+                if (File.Exists(CACHE_FILE))
+                {
+                    using (StreamReader file = File.OpenText(CACHE_FILE))
+                    {
+                        JsonSerializer serializer = new JsonSerializer();
+                        List<FantasyTeam> cacheLeague = (List<FantasyTeam>)serializer.Deserialize(file, typeof(List<FantasyTeam>));
+                        return cacheLeague;
+                    }
+                }
+            }
+
             FantasyContent leagueContent = Client.ExecuteRequest<FantasyContent>("http://fantasysports.yahooapis.com/fantasy/v2/league/364.l.45575");
-            leagueContent = Client.ExecuteRequest<FantasyContent>("http://fantasysports.yahooapis.com/fantasy/v2/league/364.l.45575/settings");
             int numTeams = int.Parse(leagueContent.League.NumTeams);
 
             List<FantasyTeam> league = new List<FantasyTeam>();
-
-            //FantasyTeam jiho = GetTeam("45575", "2");
-
-            for(int i=1; i<=numTeams; i++)
+            for (int i = 1; i < (numTeams+1); i++)
             {
-                league.Add(GetTeam("45575", i.ToString()));
+                try
+                {
+                    FantasyTeam team = GetTeam("45575", i.ToString());
+                    Thread.Sleep(3000);
+                    league.Add(team);
+                }
+                catch (Exception)
+                {
+                }
             }
 
-            // nba_id = 364
-            //FantasyContent content = Client.ExecuteRequest<FantasyContent>("http://fantasysports.yahooapis.com/fantasy/v2/game/nba");
+            using (StreamWriter file = File.CreateText(CACHE_FILE))
+            {
+                JsonSerializer serializer = new JsonSerializer();
+                serializer.Serialize(file, league);
+            }
 
-            //content = Client.ExecuteRequest<FantasyContent>("http://fantasysports.yahooapis.com/fantasy/v2/league/364.l.45575");
-
-            //content = Client.ExecuteRequest<FantasyContent>("http://fantasysports.yahooapis.com/fantasy/v2/team/364.l.45575.t.2/roster/players");
-
-            //content = Client.ExecuteRequest<FantasyContent>("http://fantasysports.yahooapis.com/fantasy/v2/player/364.p.4612/stats");
+            return league;
         }
+
+        // nba_id = 364
+        //FantasyContent content = Client.ExecuteRequest<FantasyContent>("http://fantasysports.yahooapis.com/fantasy/v2/game/nba");
+
+        //content = Client.ExecuteRequest<FantasyContent>("http://fantasysports.yahooapis.com/fantasy/v2/league/364.l.45575");
+
+        //content = Client.ExecuteRequest<FantasyContent>("http://fantasysports.yahooapis.com/fantasy/v2/team/364.l.45575.t.2/roster/players");
+
+        //content = Client.ExecuteRequest<FantasyContent>("http://fantasysports.yahooapis.com/fantasy/v2/player/364.p.4612/stats");
 
         private static FantasyTeam GetTeam(string leagueId, string teamId)
         {
@@ -70,10 +107,10 @@ namespace TheLeague
                 FantasyPlayer player = new FantasyPlayer();
                 player.Id = item.Id;
                 player.Name = item.Name.Full;
-            
+
                 string playerUrl = "http://fantasysports.yahooapis.com/fantasy/v2/player/364.p." + player.Id + "/stats";
                 FantasyContent playerContent = Client.ExecuteRequest<FantasyContent>(playerUrl);
-            
+
                 player.SeasonStats = new FantasyStats(playerContent.Player.PlayerStatistics.Stats);
                 team.Players.Add(player);
             }

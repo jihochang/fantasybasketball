@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Net;
-using System.Web;
 using YahooSports.Api.Constants;
 using YahooSports.Api.Exceptions;
 using YahooSports.Api.Providers;
-using YahooSports.Api.Sports;
-using YahooSports.Api.Sports.Models;
 using YahooSports.OAuthLib.Core;
 using YahooSports.OAuthLib.Providers;
 using System.IO;
 using System.Xml.Serialization;
+using System.Threading;
 
 namespace YahooSports.Api
 {
@@ -66,27 +64,46 @@ namespace YahooSports.Api
 
         public T ExecuteRequest<T>(string uri) where T : new()
         {
-            // Create WebRequest, and add Authorization Header for authenticated requests
-            HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create(uri);
-            AddAuthHeaders(webRequest, uri);
+            int retryCount = 0;
+            bool retry;
 
-            // Start receiving the response
-            try
+            do
             {
-                using (HttpWebResponse response = (HttpWebResponse)webRequest.GetResponse())
-                {
-                    using (Stream stream = response.GetResponseStream())
-                    {
-                        XmlSerializer serializer = new XmlSerializer(typeof(T));
+                retry = false;
 
-                        return (T)serializer.Deserialize(stream);
+                // Create WebRequest, and add Authorization Header for authenticated requests
+                HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create(uri);
+                AddAuthHeaders(webRequest, uri);
+
+                // Start receiving the response
+                try
+                {
+                    using (HttpWebResponse response = (HttpWebResponse)webRequest.GetResponse())
+                    {
+                        using (Stream stream = response.GetResponseStream())
+                        {
+                            XmlSerializer serializer = new XmlSerializer(typeof(T));
+
+                            return (T)serializer.Deserialize(stream);
+                        }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                throw ConvertException(ex);
-            }
+                catch (Exception ex)
+                {
+                    Thread.Sleep(500);
+
+                    if (retryCount > 3)
+                    {
+                        throw ConvertException(ex);
+                    }
+
+                    retry = true;
+                    retryCount++;
+
+                }
+            } while (retry);
+
+            throw new Exception("Internal Jiho Error");
         }
 
         #endregion

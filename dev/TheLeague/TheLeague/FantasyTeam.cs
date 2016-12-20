@@ -27,12 +27,14 @@ namespace TheLeague
         public string Name { get; set; } 
 
         public FantasyStats SeasonStats { get; set; }
-
-        //public FantasyStats Past30DayStats { get; set; }
     }
 
     public class FantasyStats
     {
+        public FantasyStats()
+        {
+        }
+
         /*
           [0] = Games Played
           [3] = FG Attempted
