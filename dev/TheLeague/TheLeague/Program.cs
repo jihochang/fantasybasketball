@@ -28,18 +28,162 @@ namespace TheLeague
 
         private static string CACHE_FILE = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\Temp\FantasyBasketball\leaguecache.txt";
 
+        private static string DATA_FILE = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\Temp\FantasyBasketball\data.txt";
+
         private static SportsProvider Client;
 
         private const string LeagueId = "45575";
+
+        private const bool UseCache = true;
 
 
         public static void Main(string[] args)
         {
             SetupClient();
+            List<FantasyTeam> league = GetLeague(UseCache);
 
-            List<FantasyTeam> league = GetLeague(true);
+            List<List<string>> table = GenerateTeamTotals(league);
 
+            WriteReport(DATA_FILE, table);
+        }
 
+        public static List<List<string>> GenerateTeamTotals(List<FantasyTeam> league)
+        {
+            List<List<string>> dataList = new List<List<string>>();
+            List<List<double>> dataValues = new List<List<double>>();
+
+            List<string> headers = new List<string> { "Team", "FG%", "FT%", "3s", "Points", "Assists", "Rebounds", "Steals", "Blocks", "Turnover" };
+            dataList.Add(headers);
+
+            foreach (FantasyTeam team in league)
+            {
+                double totalFGMade = 0;
+                double totalFGAttempted = 0;
+
+                double totalFTMade = 0;
+                double totalFTAttempted = 0;
+
+                double totalThrees = 0;
+                double totalPoints = 0;
+                double totalAssists = 0;
+                double totalRebounds = 0;
+                double totalSteals = 0;
+                double totalBlocks = 0;
+                double totalTurnovers = 0;
+
+                int count = 0;
+                foreach (FantasyPlayer player in team.Players)
+                {
+                    if (count > 9)
+                    {
+                        continue;
+                    }
+                    count++;
+
+                    int games = player.SeasonStats.GamePlayed;
+
+                    if (games == 0)
+                    {
+                        continue;
+                    }
+
+                    totalFGMade += player.SeasonStats.FGM;
+                    totalFGAttempted += player.SeasonStats.FGA;
+
+                    totalFTMade += player.SeasonStats.FTM;
+                    totalFTAttempted += player.SeasonStats.FTA;
+
+                    totalThrees += Math.Round((double)player.SeasonStats.ThreesMade / games, 2);
+                    totalPoints += Math.Round((double)player.SeasonStats.PointsMade / games, 2);
+                    totalAssists += Math.Round((double)player.SeasonStats.Assists / games, 2);
+                    totalRebounds += Math.Round((double)player.SeasonStats.Rebounds / games, 2);
+                    totalSteals += Math.Round((double)player.SeasonStats.Steals / games, 2);
+                    totalBlocks += Math.Round((double)player.SeasonStats.Blocks / games, 2);
+                    totalTurnovers += Math.Round((double)player.SeasonStats.Turnovers / games, 2);
+                }
+
+                double fgPercent = Math.Round(((totalFGMade / totalFGAttempted) * 100), 2);
+                double ftPercent = Math.Round(((totalFTMade / totalFTAttempted) * 100), 2);
+
+                List<double> dataValue = new List<double> { fgPercent, ftPercent, totalThrees, totalPoints, totalAssists, totalRebounds, totalSteals, totalBlocks, totalTurnovers};
+
+                dataValues.Add(dataValue);
+
+                List<string> dataString = new List<string> { team.Name, fgPercent.ToString() + "%", ftPercent.ToString() + "%", totalThrees.ToString(), totalPoints.ToString(),
+                    totalAssists.ToString(), totalRebounds.ToString(), totalSteals.ToString(), totalBlocks.ToString(), totalTurnovers.ToString() };
+
+                dataList.Add(dataString);
+            }
+
+            // EMPTY LINE
+            dataList.Add(new List<string>());
+
+            int cn = 0;
+            foreach(List<double> row in dataValues)
+            {
+                string teamName = league[cn].Name;
+                cn++;
+
+                List<string> dataString = new List<string> { teamName };
+                int count = 0;
+                foreach (double stat in row)
+                {
+                    int rank = GetRank(stat, GetSingleStat(dataValues, count));
+                    count++;
+                    dataString.Add(rank.ToString());
+                }
+
+                dataList.Add(dataString);
+            }
+
+            return dataList;
+        }
+        
+        private static List<double> GetSingleStat(List<List<double>> dataValues, int index)
+        {
+            List<double> stats = new List<double>();
+
+            foreach (List<double> row in dataValues)
+            {
+                stats.Add(row[index]);
+            }
+
+            return stats;
+        }
+
+        private static int GetRank(double value, List<double> list)
+        {
+            list.Sort();
+
+            int rank = list.Count;
+            foreach(double element in list)
+            {
+                if(value == element)
+                {
+                    return rank;
+                }
+
+                rank--;
+            }
+
+            return 1;
+        }
+
+        private static void WriteReport(string fileName, List<List<string>> table)
+        {
+            using (StreamWriter sw = new StreamWriter(fileName))
+            {
+                foreach (List<string> row in table)
+                {
+                    foreach(string value in row)
+                    {
+                        string temp = value.PadRight(25, ' ');
+                        sw.Write(temp);
+                    }
+
+                    sw.WriteLine();
+                }
+            }
         }
 
         private static List<FantasyTeam> GetLeague(bool useCache)
@@ -101,6 +245,7 @@ namespace TheLeague
 
             team.Id = teamContent.Team.Id;
             team.Manager = teamContent.Team.Managers[0].Nickname;
+            team.Name = teamContent.Team.Name;
 
             foreach (Team.Roster.TeamPlayer item in teamContent.Team.TeamRoster.Players)
             {

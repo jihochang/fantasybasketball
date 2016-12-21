@@ -11,6 +11,8 @@ namespace TheLeague
 
         public int Id { get; set; }
 
+        public string Name { get; set; }
+
         public string Manager { get; set; }
 
         public List<FantasyPlayer> Players { get; set; }
@@ -44,6 +46,7 @@ namespace TheLeague
           [7] = FT Made
           [8] = FT%
           [10] = Threes Made
+          [12] = Points Made
           [15] = Rebounds 
           [16] = Assists
           [17] = Steals
@@ -59,11 +62,12 @@ namespace TheLeague
             FTA = ConvertStatValue(stats[6].Value);
             FTM = ConvertStatValue(stats[7].Value);
             ThreesMade = ConvertStatValue(stats[10].Value);
+            PointsMade = ConvertStatValue(stats[12].Value);
             Rebounds = ConvertStatValue(stats[15].Value);
             Assists = ConvertStatValue(stats[16].Value);
             Steals = ConvertStatValue(stats[17].Value);
             Blocks = ConvertStatValue(stats[18].Value);
-            Turnover = ConvertStatValue(stats[19].Value);
+            Turnovers = ConvertStatValue(stats[19].Value);
         }
 
         private int ConvertStatValue(string value)
@@ -90,6 +94,8 @@ namespace TheLeague
 
         public int ThreesMade { get; set; }
 
+        public int PointsMade { get; set; }
+
         public int Rebounds { get; set; }
 
         public int Assists { get; set; }
@@ -98,6 +104,6 @@ namespace TheLeague
 
         public int Blocks { get; set; }
 
-        public int Turnover { get; set; }
+        public int Turnovers { get; set; }
     }
 }
